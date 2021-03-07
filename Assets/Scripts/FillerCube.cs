@@ -16,7 +16,7 @@ public class FillerCube : MonoBehaviour
             other.gameObject.GetComponent<BoxCollider>().enabled = false;
             Debug.Log("Risin' Up!");
 
-            var cubeController = other.GetComponent<CubeController>();
+            var cubeController = GetComponent<CubeController>();
 
             if(cubeController)
             {

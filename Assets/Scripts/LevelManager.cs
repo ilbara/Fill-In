@@ -9,6 +9,8 @@ public class LevelManager : MonoBehaviour
 
     public Action LevelCompleted;
 
+    public Action NextLevelTrans;
+
     [SerializeField] LevelInfoAsset levelInfoAsset;
 
     [SerializeField] private Transform cubeSpawnerPoint;
@@ -17,16 +19,16 @@ public class LevelManager : MonoBehaviour
 
     private static LevelManager instance;
 
-    int currentLevelIndex = 0;
-
-    int totalCubes;
+    int currentLevelIndex = 1;   
 
     CubeSpawner cubeSpawner = new CubeSpawner();
 
+    public float levelProgress;
+
     
 
-    List<CubeController> createdCubes = new List<CubeController>();
-    List<CubeController> collectedCubes = new List<CubeController>();
+    public List<CubeController> createdCubes = new List<CubeController>();
+    public List<CubeController> filledCubes = new List<CubeController>();
 
     private void Awake()
     {
@@ -44,28 +46,66 @@ public class LevelManager : MonoBehaviour
         cubeSpawner = GetComponent<CubeSpawner>();
     }
 
-    public bool HandleCreateNextLevel()
+    private void Start()
     {
-        if (createdCubes.Count > 0)
-        {
-            for (int i = 0; i < createdCubes.Count; i++)
-            {
-                Destroy(createdCubes[i]);
-            }
-        }
-
-        ++currentLevelIndex;
-
-        if (levelInfoAsset.levelInfos.Count >= currentLevelIndex)
-        {
-            CreateNextLevel();
-            return true;
-        }
-
-        return false;
+        CreateNextLevel();
+        LevelCompleted += HandleCreateNextLevel;
     }
 
-    void CreateNextLevel()
+
+
+    //public bool HandleCreateNextLevel()
+    //{
+    //    if (filledCubes.Count > 0)
+    //    {
+    //        for (int i = 0; i < filledCubes.Count; i++)
+    //        {
+    //            Destroy(filledCubes[i]);
+    //        }
+    //    }
+
+    //    ++currentLevelIndex;
+
+    //    if (levelInfoAsset.levelInfos.Count >= currentLevelIndex)
+    //    {
+    //        CreateNextLevel();
+    //        return true;
+    //    }
+
+    //    return false;
+    //}
+
+    public void HandleCreateNextLevel()
+    {
+        if (filledCubes.Count > 0 )
+        {
+            for (int i = 0; i < filledCubes.Count; i++)
+            {
+                Destroy(filledCubes[i].gameObject);
+                Destroy(filledCubes[i]);
+            }
+        }
+        ++currentLevelIndex;
+        if(levelInfoAsset.levelInfos.Count >= currentLevelIndex)
+        {
+            StartCoroutine(WaitforSeconds(2f));
+           
+            //StopAllCoroutines();
+        }
+    }
+
+    IEnumerator WaitforSeconds(float time)
+    {        
+        yield return new WaitForSecondsRealtime(time);
+        NextLevelTrans?.Invoke();
+        CreateNextLevel();
+
+    }
+
+
+
+
+    public void CreateNextLevel()
     {
         cubeSpawner.CreateCubesFromImage(levelInfoAsset.levelInfos[currentLevelIndex - 1], cubeSpawnerPoint, fillerSpawnerPoint);
 
@@ -74,26 +114,24 @@ public class LevelManager : MonoBehaviour
     public void OnCubeCreated(CubeController cubeController)
     {
         createdCubes.Add(cubeController);
-        Debug.Log("Collected Block Count" + collectedCubes.Count);
+        Debug.Log("Collected Block Count" + filledCubes.Count);
     }
 
-    public void OnCubeCollected(CubeController cubeController)
+    public void OnCubeFilled(CubeController cubeController)
     {
-        collectedCubes.Add(cubeController);
-        Debug.Log($"{ collectedCubes.Count} / { createdCubes.Count} <- collectedCubes Block Count");       
-
-        if (collectedCubes.Count == createdCubes.Count)
+        filledCubes.Add(cubeController);
+        Debug.Log($"{ filledCubes.Count} / { createdCubes.Count} <- filledCubes Block Count");
+        levelProgress = filledCubes.Count / createdCubes.Count;
+        if (filledCubes.Count == createdCubes.Count)
         {
             LevelCompleted?.Invoke();
         }
     }
-    public void CubeCounter()
-    {
-        totalCubes++;
-    }
+
+   
 
 
-    
+
 
 }
 

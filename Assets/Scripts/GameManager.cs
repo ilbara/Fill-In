@@ -19,22 +19,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        if (LevelManager.Instance.HandleCreateNextLevel())
-        {
-            Debug.Log("Go to next level!");
+    //private void Start()
+    //{
+    //    if (LevelManager.Instance.HandleCreateNextLevel())
+    //    {
+    //        Debug.Log("Go to next level!");
 
-        }
-        else
-        {
-            Debug.Log("No more Levelé");
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("No more Levelé");
 
-        }
-    }
+    //    }
+
+    //    LevelManager.Instance.LevelCompleted += OnLevelCompleted;
+    //}
 
     void OnLevelCompleted()
     {
         Debug.Log("level completed");
+        //LevelManager.Instance.CreateNextLevel();
     }
 }

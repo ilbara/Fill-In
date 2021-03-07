@@ -34,7 +34,7 @@ public class CubeController : MonoBehaviour
                     OnFilled?.Invoke(this);
 
                     OnCreated -= LevelManager.Instance.OnCubeCreated;
-                    OnFilled -= LevelManager.Instance.OnCubeCollected;
+                    OnFilled -= LevelManager.Instance.OnCubeFilled;
 
                     break;
 
@@ -59,6 +59,6 @@ public class CubeController : MonoBehaviour
     private void OnEnable()
     {
         OnCreated += LevelManager.Instance.OnCubeCreated;
-        OnFilled += LevelManager.Instance.OnCubeCollected;
+        OnFilled += LevelManager.Instance.OnCubeFilled;
     }
 }
